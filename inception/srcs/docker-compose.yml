@@ -1,0 +1,62 @@
+version: '3.2'
+
+services:
+  nginx:
+    image: nginx
+    container_name: nginx
+    build: ./requirements/nginx
+    ports:
+      - "443:443"
+    networks:
+      - CGN
+    depends_on:
+      - wordpress
+    volumes:
+      - wordpress-data:/var/www/html
+    restart: always
+
+  mariadb:
+      env_file: .env
+      image: mariadb
+      container_name: mariadb
+      build: ./requirements/mariadb
+      ports:
+        - "3306:3306"
+      networks:
+        - CGN
+      volumes:
+        - mariadb-data:/var/lib/mysql
+      restart: always
+
+  wordpress:
+    env_file: .env
+    image: wordpress
+    container_name: wordpress
+    build: /home/ylha/Desktop/bnm/inception/srcs/requirements/wordpress 
+    ports:
+      - "9000:9000"
+      - "3306:3306"
+    networks:
+      - CGN
+    depends_on:
+      - mariadb
+    volumes:
+      - wordpress-data:/var/www/html
+    restart: always
+
+volumes:
+  wordpress-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/ylhouari/data/wordpress
+      o: bind
+  mariadb-data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/ylhouari/data/mariadb
+      o: bind
+networks:
+  CGN:
+
